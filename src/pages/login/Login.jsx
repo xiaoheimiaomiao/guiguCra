@@ -2,19 +2,29 @@ import React from 'react'
 import logo from './images/logo512.png'
 import './Login.css'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input } from 'antd';
+import { useNavigate } from "react-router-dom";
+import { Button, Form, Input, message } from 'antd';
 import { reqLogin } from '../../api'
 
 
 export default function Login() {
+  const navigate = useNavigate();
   const onFinish = (values) => {
     const { username, password } = values
-    reqLogin(username,password)
-    console.log('Received values of form: ', values);
+    reqLogin(username, password).then(result => {
+      if (result.status === 0) {
+        const user = result.data
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/")
+        message.success('登录成功');
+      } else {
+        message.error('请输入正确的用户名或密码');
+      }
+    })
+    
   };
   return (
     <div className='login'>
-
       <header className='login-header'>
         <img src={logo} alt='logo' />
         <h1>React项目:后台管理系统</h1>
@@ -56,11 +66,7 @@ export default function Login() {
               {
                 max: 16,
                 message: '密码需要小于12位'
-              },
-              {
-                pattern: /(.[^a-z0-9])/g,
-                message: '密码必须包含大写字母、小写字母和数字-'
-              }
+              }            
             ]}
           >
             <Input

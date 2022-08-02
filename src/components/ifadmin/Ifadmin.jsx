@@ -6,7 +6,7 @@ export default function Ifadmin() {
     return (
         <>
             {
-                localStorage.getItem("token") ?
+                localStorage.getItem("user") ?
                     <Admin /> :
                     <Navigate to="/login"></Navigate>
             }

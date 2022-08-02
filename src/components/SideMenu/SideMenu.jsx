@@ -11,7 +11,14 @@ export default function SideMenu() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location.pathname)
+  const path = location.pathname
+
+  const citme = menuList.find((item) => {
+    return item?.children?.find((cItem) => {
+      return cItem?.key === path;
+    })
+  })
+ 
 
   return (
 
@@ -21,9 +28,11 @@ export default function SideMenu() {
         theme="dark"
         mode="inline"
         items={menuList}
-        defaultSelectedKeys={location.pathname}
+        defaultSelectedKeys={[path]}
         onClick={(menuList) => {
-          navigate(menuList.key) }}
+          navigate(menuList.key)
+        }}
+        defaultOpenKeys={[citme?.key]}
       />
     </Sider>
 
