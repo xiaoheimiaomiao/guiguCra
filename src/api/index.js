@@ -81,7 +81,7 @@ export const reqWeather = (city) => {
     const url = `https://restapi.amap.com/v3/weather/weatherInfo?key=5240f8baf3325e5419c92ac1396d39b3&city=${city}`
     // 发送jsonp请求
     jsonp(url, {}, (err, data) => {
-      // console.log('jsonp()', err, data)
+      console.log('jsonp()', err, data)
       // 如果成功了
       if (!err && data.status==='1') {
         // 取出需要的数据
