@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useLocation, useNavigate } from "react-router-dom";
-import { Layout, Modal } from 'antd';
+import { Layout, Modal ,Button} from 'antd';
 import menuList from '../SideMenu/menuList';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { formateDate } from '../../utils/dateUtils'
@@ -58,7 +58,7 @@ export default function TopHeader() {
       }
     }
   }
-// 退出登录
+  // 退出登录
   const showConfirm = () => {
     confirm({
       title: '确认要退出登录吗？',
@@ -85,7 +85,7 @@ export default function TopHeader() {
       >
         <div className="header-top">
           <span>欢迎{user?.username}</span>
-          <a onClick={showConfirm}>退出</a>
+          <Button type="link" onClick={showConfirm}>退出</Button>
         </div>
         <div className="header-bottom">
           <div className="header-bottom-left">{title}</div>
