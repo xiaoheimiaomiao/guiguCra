@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Button, Table, Space, Modal } from 'antd';
 import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons'
-import { reqCategorys } from '../../api/index'
+import { reqCategorys, reqUpdateCategory,reqAddCategory} from '../../api/index'
 import Addform from './Addform'
 import './Category.less'
 import Update from './Update';
@@ -14,7 +14,10 @@ export default function Category() {
   const [parentName, setParentName] = useState('')
   // 添加、更新的确认框是否显示，0都不显示，1显示添加，2显示更新
   const [showStatus, setShowStatus] = useState('0')
-
+  // 更新按鈕 用于保存信息
+  const [category, setCategory] = useState()
+  // console.log(category.name)
+  
   // 点击一级分类列表 跳转到一级分类列表
   const shoeCategorys = () => {
     setParentId('0')
@@ -29,8 +32,10 @@ export default function Category() {
     setShowStatus('1')
   }
   // 显示更新的确认框
-  const showUpdate = () => {
+  const showUpdate = (categorys) => {
     setShowStatus('2')
+    setCategory(categorys)
+    
   }
   // 添加分类
   const addCategory = () => {
@@ -39,6 +44,17 @@ export default function Category() {
   // 更新分类
   const updateCategory = () => {
     console.log("updateCategory()")
+    // 1隐藏确定框
+    setShowStatus('0')
+
+    const categoryId=category._id
+    console.log(categoryId)
+    // 2 发送请求更新分类
+    // reqUpdateCategory({categoryId, categoryName}).then(result=>{
+
+    // })
+    // 3 重新显示列表
+
   }
 
 
@@ -71,7 +87,7 @@ export default function Category() {
       key: 'action',
       render: (categorys) => (
         <Space size="middle">
-          <Button type='link' onClick={showUpdate} >修改分类</Button>
+          <Button type='link' onClick={() => { showUpdate(categorys) }} >修改分类</Button>
           {parentId === '0' ? <Button type='link' onClick={() => { showSubCategorys(categorys) }}>查看子分类</Button> : null}
         </Space>
       ),
@@ -94,8 +110,8 @@ export default function Category() {
         onCancel={handleCancel}
         okText="确认"
         cancelText="取消">
-          <Addform></Addform>
-        
+        <Addform></Addform>
+
 
       </Modal>
       <Modal title="更新分类"
@@ -106,7 +122,7 @@ export default function Category() {
         okText="确认"
         cancelText="取消">
 
-        <Update></Update>
+        <Update categoryName={category?.name}></Update>
 
       </Modal>
       <Card title={title} extra={extra} >
