@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Button, Table, Space, Modal } from 'antd';
 import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons'
-import { reqCategorys, reqUpdateCategory,reqAddCategory} from '../../api/index'
+import { reqCategorys, reqUpdateCategory, reqAddCategory } from '../../api/index'
 import Addform from './Addform'
 import './Category.less'
 import Update from './Update';
@@ -16,8 +16,11 @@ export default function Category() {
   const [showStatus, setShowStatus] = useState('0')
   // 更新按鈕 用于保存信息
   const [category, setCategory] = useState()
+
+  // 修改类型
+  const [newCategoryName, setNewCategoryName] = useState()
   // console.log(category.name)
-  
+  console.log(newCategoryName)
   // 点击一级分类列表 跳转到一级分类列表
   const shoeCategorys = () => {
     setParentId('0')
@@ -35,24 +38,30 @@ export default function Category() {
   const showUpdate = (categorys) => {
     setShowStatus('2')
     setCategory(categorys)
-    
+
   }
   // 添加分类
   const addCategory = () => {
     console.log("addCategory()")
   }
+  const getNewCategoryName = (value) => {
+    // console.log(value)
+    setNewCategoryName(value)
+    // console.log("999" + value)
+
+  }
   // 更新分类
   const updateCategory = () => {
-    console.log("updateCategory()")
+    // console.log("updateCategory()")
     // 1隐藏确定框
     setShowStatus('0')
 
-    const categoryId=category._id
+    const categoryId = category._id
     console.log(categoryId)
     // 2 发送请求更新分类
-    // reqUpdateCategory({categoryId, categoryName}).then(result=>{
-
-    // })
+    reqUpdateCategory({ categoryId, categoryName: newCategoryName }).then(result => {
+      console.log(result)
+    })
     // 3 重新显示列表
 
   }
@@ -122,7 +131,7 @@ export default function Category() {
         okText="确认"
         cancelText="取消">
 
-        <Update categoryName={category?.name}></Update>
+        <Update getNewCategoryName={getNewCategoryName} categoryName={category?.name}></Update>
 
       </Modal>
       <Card title={title} extra={extra} >
