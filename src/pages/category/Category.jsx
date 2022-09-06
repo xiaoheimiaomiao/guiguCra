@@ -17,18 +17,19 @@ export default function Category() {
   // 更新按鈕 用于保存信息
   const [category, setCategory] = useState()
 
-  // 修改类型
-  const [newCategoryName, setNewCategoryName] = useState()
-  // console.log(category.name)
-  console.log(newCategoryName)
+  // form实例
+  const [upDateForm, setUpDateForm] = useState()
+  const [addCategorysForm, setAddCategorysForm] = useState()
+  console.log('addCategorysForm: ', addCategorysForm);
+
   // 点击一级分类列表 跳转到一级分类列表
   const shoeCategorys = () => {
     setParentId('0')
   }
-
   // 点击取消 隐匿确定框
   const handleCancel = () => {
     setShowStatus('0')
+    // addCategorysForm.resetFields()
   };
   // 显示添加的确认框
   const showAdd = () => {
@@ -38,34 +39,36 @@ export default function Category() {
   const showUpdate = (categorys) => {
     setShowStatus('2')
     setCategory(categorys)
-
   }
   // 添加分类
   const addCategory = () => {
     console.log("addCategory()")
   }
-  const getNewCategoryName = (value) => {
-    // console.log(value)
-    setNewCategoryName(value)
-    // console.log("999" + value)
 
-  }
   // 更新分类
   const updateCategory = () => {
-    // console.log("updateCategory()")
     // 1隐藏确定框
     setShowStatus('0')
-
     const categoryId = category._id
-    console.log(categoryId)
+    // console.log(categoryId)
     // 2 发送请求更新分类
-    reqUpdateCategory({ categoryId, categoryName: newCategoryName }).then(result => {
+    const categoryName = upDateForm.getFieldValue('updateForm')
+    reqUpdateCategory({ categoryId, categoryName }).then(result => {
       console.log(result)
     })
     // 3 重新显示列表
-
+    reqCategorys(parentId).then(result => {
+      const list = result.data
+      setCategorys(list)
+    })
   }
-
+  // update父组件向子组件传递函数，用于子传父数据
+  const setUpdateForm = (form) => {
+    setUpDateForm(form)
+  }
+  const setAddFrom=(form)=>{
+    setAddCategorysForm(form)
+  }
 
   const title = parentId === '0' ? '一级分类列表' : (
     <span>
@@ -113,25 +116,30 @@ export default function Category() {
   return (
     <>
       <Modal title="添加分类"
-        visible={showStatus === '1'}
+        open={showStatus === '1'}
         // 添加分类 点击确认调用函数
         onOk={addCategory}
         onCancel={handleCancel}
         okText="确认"
         cancelText="取消">
-        <Addform></Addform>
+        <Addform
+          categorys={categorys}
+          parentId={parentId}
+          setAddFrom={setAddFrom}
+         >
+        </Addform>
 
 
       </Modal>
       <Modal title="更新分类"
-        visible={showStatus === '2'}
+        open={showStatus === '2'}
         // 确认更新分类
         onOk={updateCategory}
         onCancel={handleCancel}
         okText="确认"
         cancelText="取消">
 
-        <Update getNewCategoryName={getNewCategoryName} categoryName={category?.name}></Update>
+        <Update setUpdateForm={setUpdateForm} categoryName={category?.name}></Update>
 
       </Modal>
       <Card title={title} extra={extra} >
