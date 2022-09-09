@@ -10,6 +10,9 @@ import Bar from "../pages/charts/Bar"
 import Pie from "../pages/charts/Pie"
 import Line from "../pages/charts/Line"
 import Page404 from "../components/Page404"
+import ProductAddupdate from "../pages/product/ProductAddupdate";
+import Detail from "../pages/product/Detail";
+import ProductHome from "../pages/product/ProductHome";
 const routes = [
     {
         path: '/login',
@@ -21,35 +24,49 @@ const routes = [
         children: [
             {
                 path: 'home',
-                element: <Home/>,
+                element: <Home />,
             },
             {
                 path: 'category',
-                element: <Category/>
+                element: <Category />
             },
             {
                 path: 'product',
-                element: <Product/>
+                element: <Product />,
+                children: [
+                    {
+                        path: 'home',
+                        element: <ProductHome/>
+                    },
+                    {
+                        path: 'addupdate',
+                        element: <ProductAddupdate />
+                    },
+                    {
+                        path: 'detail',
+                        element: <Detail />
+                    }
+                ]
             },
             {
                 path: 'user',
-                element: <User/>
+                element: <User />
             },
             {
                 path: 'role',
-                element: <Role/>,
+                element: <Role />,
             },
             {
                 path: 'charts/bar',
-                element: <Bar/>,
+                element: <Bar />,
             },
             {
                 path: 'charts/pie',
-                element: <Pie/>,
+                element: <Pie />,
             },
             {
                 path: 'charts/line',
-                element: <Line/>,
+                element: <Line />,
             },
             {
                 path: '/',
@@ -57,7 +74,7 @@ const routes = [
             },
             {
                 path: '*',
-                element:<Page404/>
+                element: <Page404 />
             }
         ]
     }

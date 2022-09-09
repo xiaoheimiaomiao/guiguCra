@@ -19,7 +19,7 @@ const menuList = [{
             label: '品类管理',
         },
         {
-            key: '/product',
+            key: '/product/home',
             icon: <VideoCameraOutlined />,
             label: '商品管理',
         }
