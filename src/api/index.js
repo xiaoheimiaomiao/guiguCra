@@ -41,6 +41,7 @@ export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) =
   [searchType]: searchName,
 })
 
+
 // 搜索商品分页列表 (根据商品描述)
 /*export const reqSearchProducts2 = ({pageNum, pageSize, searchName}) => ajax(BASE + '/manage/product/search', {
   pageNum,

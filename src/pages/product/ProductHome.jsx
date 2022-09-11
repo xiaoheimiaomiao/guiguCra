@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Card,
   Select,
@@ -9,14 +9,25 @@ import {
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons'
 import { useNavigate } from "react-router-dom";
-import './product.less'
+import { reqProducts, reqSearchProducts } from '../../api/index'
+import { PAGE_SIZE } from '../../utils/constants'
+// import './product.less'
 const { Option } = Select;
 export default function ProductHome() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
+  const [total, setTotal] = useState(0)// 数据总数
+  const [products, setProducts] = useState() //商品数组
+  const [searchName, setSearchName] = useState('')
+  const [searchType, setSearchType] = useState('productName')
   const title = (
     <span>
       <Select
         style={{ width: 150 }}
+        value={searchType}
+        onChange={(value) => {
+          setSearchType(value)
+        }}
       >
         <Option value='productName'>按名称搜索</Option>
         <Option value='productDesc'>按内容搜索</Option>
@@ -24,12 +35,17 @@ export default function ProductHome() {
       <Input
         placeholder='关键字'
         style={{ width: 150, margin: '0 15px' }}
+        value={searchName}
+        onChange={(event) => {
+          setSearchName(event.target.value)
+        }}
       />
-      <Button  >搜索</Button>
+      <Button onClick={() => { getProducts(1) }}>搜索</Button>
+
     </span>
   )
   const extra = (
-    <Button 
+    <Button
       onClick={() => {
         navigate('/product/addupdate')
       }}
@@ -38,15 +54,6 @@ export default function ProductHome() {
       添加商品
     </Button>
   )
-  const list = [
-    {
-      key: '1',
-      name: '联想Thinkpad翼480',
-      describe: '年度重量级新品更加轻薄设计',
-      price: '6000',
-      // condition: '在售',
-    }
-  ]
   const columns = [
     {
       key: 'name',
@@ -57,7 +64,7 @@ export default function ProductHome() {
     {
       key: 'describe',
       title: '商品描述',
-      dataIndex: 'describe',
+      dataIndex: 'desc',
     },
     {
       key: 'price',
@@ -69,7 +76,7 @@ export default function ProductHome() {
       key: 'condition',
       title: '状态',
       dataIndex: 'condition',
-      width:150,
+      width: 150,
       render: () => {
         return (
           <Space size="middle">
@@ -91,6 +98,29 @@ export default function ProductHome() {
     }
   ]
 
+  // 获取指定页码数据显示
+  const getProducts = async (pageNum) => {
+    setLoading(true)
+    let result
+    if (searchName) {
+      result = await reqSearchProducts({ pageNum, pageSize: PAGE_SIZE, searchName, searchType })
+    } else { // 一般分页请求
+      result = await reqProducts(pageNum, PAGE_SIZE)
+    }
+    // const result = await reqProducts(pageNum, PAGE_SIZE)
+    setLoading(false)
+    console.log(result)
+    if (result.status === 0) {
+      // console.log(result.date)
+      const { total, list } = result.data
+      setProducts(list)
+      setTotal(total)
+    }
+  }
+
+  useEffect(() => {
+    getProducts(1)
+  }, [])
   return (
     <>
       <Card
@@ -100,9 +130,15 @@ export default function ProductHome() {
         <Table
           // // 是否展示外边框和列边框
           bordered={true}
+          loading={loading}
           columns={columns}
-          dataSource={list}
-          pagination={{ pageSize: 5 }}
+          dataSource={products}
+          pagination={{
+            defaultPageSize: PAGE_SIZE,
+            total,
+            showQuickJumper: true,
+            onChange: getProducts
+          }}
         />
       </Card>
     </>

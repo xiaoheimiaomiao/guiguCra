@@ -22,10 +22,12 @@ export default function Category() {
 
   // form实例
   const [form, setForm] = useState()
-
+  const [loading, setLoading] = useState(false)
   // 异步获取一级/二级分类列表显示
   const getCategorys = async (parentId) => {
+    setLoading(true)
     const result = await reqCategorys(parentId)
+    setLoading(false)
     if (result.status === 0) {
       // 可能为一级，也有可能为二级
       const list = result.data
@@ -182,6 +184,7 @@ export default function Category() {
       <Card title={title} extra={extra} >
         <Table
           // 是否展示外边框和列边框
+          loading={loading}
           bordered={true}
           columns={columns}
           dataSource={parentId === '0' ? categorys : subCategorys}
