@@ -20,6 +20,25 @@ export default function ProductHome() {
   const [products, setProducts] = useState() //商品数组
   const [searchName, setSearchName] = useState('')
   const [searchType, setSearchType] = useState('productName')
+  const pushShow = (product) => {
+    // console.log(product)
+    navigate('/product/detail/', {
+      replace: false,
+      state: {
+        // categoryId: product.categoryId,
+        // desc: product.desc,
+        // imgs: product.imgs,
+        // name: product.name,
+        // pCategoryId: product.pCategoryId,
+        // price: product.price,
+        // status: product.status,
+        // __v: product.__v,
+        // _id: product._id
+        product
+      }
+
+    })
+  }
   const title = (
     <span>
       <Select
@@ -90,9 +109,9 @@ export default function ProductHome() {
       width: 100,
       title: '操作',
       key: 'action',
-      render: () => (
+      render: (product) => (
         <Space size="middle">
-          <Button type='link' >详情</Button>
+          <Button type='link' onClick={() => { pushShow(product) }}>详情</Button>
           <Button type='link' >修改</Button>
         </Space>)
     }
@@ -109,7 +128,7 @@ export default function ProductHome() {
     }
     // const result = await reqProducts(pageNum, PAGE_SIZE)
     setLoading(false)
-    console.log(result)
+    // console.log(result)
     if (result.status === 0) {
       // console.log(result.date)
       const { total, list } = result.data
