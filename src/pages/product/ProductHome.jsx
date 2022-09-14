@@ -6,10 +6,11 @@ import {
   Input,
   Table,
   Space,
+  message
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons'
 import { useNavigate } from "react-router-dom";
-import { reqProducts, reqSearchProducts } from '../../api/index'
+import { reqProducts, reqSearchProducts, reqUpdateStatus } from '../../api/index'
 import { PAGE_SIZE } from '../../utils/constants'
 // import './product.less'
 const { Option } = Select;
@@ -20,24 +21,24 @@ export default function ProductHome() {
   const [products, setProducts] = useState() //商品数组
   const [searchName, setSearchName] = useState('')
   const [searchType, setSearchType] = useState('productName')
+  const [pagesNum, setPagesNum] = useState('')
   const pushShow = (product) => {
-    // console.log(product)
+    console.log(product)
     navigate('/product/detail/', {
       replace: false,
       state: {
-        // categoryId: product.categoryId,
-        // desc: product.desc,
-        // imgs: product.imgs,
-        // name: product.name,
-        // pCategoryId: product.pCategoryId,
-        // price: product.price,
-        // status: product.status,
-        // __v: product.__v,
-        // _id: product._id
         product
       }
 
     })
+  }
+  const updateStatus = async ({ _id: productId, status }) => {
+    const newStatus = status === 1 ? 2 : 1
+    const result = await reqUpdateStatus(productId, newStatus)
+    if (result.status === 0) {
+      await getProducts(pagesNum)
+      message.success('更新商品成功')
+    }
   }
   const title = (
     <span>
@@ -92,15 +93,17 @@ export default function ProductHome() {
       render: (price) => '¥' + price  // 当前指定了对应的属性, 传入的是对应的属性值
     },
     {
-      key: 'condition',
+      key: 'status',
       title: '状态',
-      dataIndex: 'condition',
+      dataIndex: 'status',
       width: 150,
-      render: () => {
+      render: (status, listData) => {
         return (
           <Space size="middle">
-            <span>在售</span>
-            <Button>下架</Button>
+            <Button onClick={() => { updateStatus(listData) }} >
+              {status === 1 ? '下架' : '上架'}
+            </Button>
+            <span>{status === 1 ? '在售' : '未上架'}</span>
           </Space>
         )
       }
@@ -119,6 +122,7 @@ export default function ProductHome() {
 
   // 获取指定页码数据显示
   const getProducts = async (pageNum) => {
+    setPagesNum(pageNum)
     setLoading(true)
     let result
     if (searchName) {
