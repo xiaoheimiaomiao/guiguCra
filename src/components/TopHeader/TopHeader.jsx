@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useLocation, useNavigate } from "react-router-dom";
-import { Layout, Modal ,Button} from 'antd';
+import { Layout, Modal, Button } from 'antd';
 import menuList from '../SideMenu/menuList';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { formateDate } from '../../utils/dateUtils'
@@ -25,7 +25,7 @@ export default function TopHeader() {
     return () => {
       clearInterval(intervalRef.current);
     };
-  });
+  },[]);
   // 天气文本
   const [weather, setWeather] = useState("下雨")
   // 温度文本
@@ -44,7 +44,12 @@ export default function TopHeader() {
   // 获取标题
   const location = useLocation();
   const path = location.pathname
+  // console.log(path)
+ 
   const title = getTitle(menuList, path)
+  // if (path.indexOf('/product') === 0) {
+  //   path = '/product/home'
+  // }
   function getTitle(list, key) {
     for (let item of list) {
       if (item.key === key) {

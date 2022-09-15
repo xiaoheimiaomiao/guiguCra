@@ -36,7 +36,7 @@ const routes = [
                 children: [
                     {
                         path: 'home',
-                        element: <ProductHome/>
+                        element: <ProductHome />
                     },
                     {
                         path: 'addupdate',

@@ -11,14 +11,17 @@ export default function SideMenu() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const path = location.pathname
+  let path = location.pathname
+  if (path.indexOf('/product') === 0) {
+    path = '/product/home'
+  }
 
   const citme = menuList.find((item) => {
     return item?.children?.find((cItem) => {
       return cItem?.key === path;
     })
   })
- 
+
 
   return (
 

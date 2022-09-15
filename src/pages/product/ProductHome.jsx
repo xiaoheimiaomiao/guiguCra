@@ -24,7 +24,7 @@ export default function ProductHome() {
   const [pagesNum, setPagesNum] = useState('')
   const pushShow = (product) => {
     console.log(product)
-    navigate('/product/detail/', {
+    navigate('/product/detail', {
       replace: false,
       state: {
         product
