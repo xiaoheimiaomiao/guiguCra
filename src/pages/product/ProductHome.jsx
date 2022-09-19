@@ -23,13 +23,19 @@ export default function ProductHome() {
   const [searchType, setSearchType] = useState('productName')
   const [pagesNum, setPagesNum] = useState('')
   const pushShow = (product) => {
-    console.log(product)
     navigate('/product/detail', {
       replace: false,
       state: {
         product
       }
-
+    })
+  }
+  const update = (product) => {
+    navigate('/product/addupdate',{
+      replace:false,
+      state:{
+        product
+      }
     })
   }
   const updateStatus = async ({ _id: productId, status }) => {
@@ -115,7 +121,7 @@ export default function ProductHome() {
       render: (product) => (
         <Space size="middle">
           <Button type='link' onClick={() => { pushShow(product) }}>详情</Button>
-          <Button type='link' >修改</Button>
+          <Button type='link' onClick={() => { update(product) }}>修改</Button>
         </Space>)
     }
   ]

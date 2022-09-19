@@ -5,26 +5,19 @@ import {
   Button,
   Form,
   Input,
-
   Modal,
   Upload,
   Cascader
 } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { reqCategorys } from '../../api/index'
 import { useEffect } from 'react';
+import { useMemo } from 'react';
+import PicturesWall from './PicturesWall';
 const { TextArea } = Input;
 
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
 
-    reader.onload = () => resolve(reader.result);
-
-    reader.onerror = (error) => reject(error);
-  });
 
 
 export default function ProductAddupdate() {
@@ -32,48 +25,43 @@ export default function ProductAddupdate() {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
   const [options, setOptions] = useState([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [previewTitle, setPreviewTitle] = useState('');
-  const [fileList, setFileList] = useState([ ]);
+  console.log('options: ', options);
 
-  const handleCancel = () => setPreviewOpen(false);
+ 
+ 
+  // const [categoryIds, setCategoryIds] = useState('')
+  // const isUpdate = !!product
+  const location = useLocation()
+  
 
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
+  // 根据category数组 生成option数组
+  const initOptions = async (categorys) => {
 
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
-  };
-
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </div>
-  );
-  const initOptions = (categorys) => {
-    // 根据category数组 生成option数组
     const options = categorys.map((item) => ({
       value: item._id,
       label: item.name,
       isLeaf: false,
     }))
     // 更新option状态
-    // console.log(options)
-    setOptions(options)
+    // 如果是一个二级分类的更新
+    const { pCategoryId, categoryId } = product
+    console.log('product: ', product);
 
+    if (!!product&& pCategoryId !== '0') {
+      // 获取对应的二级列表
+      const subCategorys = await getCategorys(pCategoryId)
+      // 生成下拉的option
+      const childOptions = subCategorys.map((item) => ({
+        value: item._id,
+        label: item.name,
+        isLeaf: true,
+      }))
+      // 找到当前商品的对应的一级option对象
+      const targetOption = options.find(option => option.value === pCategoryId)
+      // 关联对应的一级option上
+      targetOption.children = childOptions
+    }
+    setOptions(options)
   }
 
   // 获取一级、二级分类列表并显示
@@ -84,7 +72,7 @@ export default function ProductAddupdate() {
 
       if (parentId === '0') {
         initOptions(categorys)
-        // console.log(categorys)
+        // 
       } else {
         // 二级列表
         // 当前async函数返回的promise对象就会成功 且value为categorys
@@ -96,6 +84,7 @@ export default function ProductAddupdate() {
 
   // 用于加载下一级列表的回调函数
   const loadData = async (selectedOptions) => {
+    // console.log(11111111111)
     // 选择的option对象
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true; // load options lazily
@@ -121,11 +110,8 @@ export default function ProductAddupdate() {
 
   };
 
-
-
-
   const onFinish = (values) => {
-    console.log('Success:', values);
+
     // 1收集数据 并封装成product对象
     const { name, desc, price, categoryIds } = values
     let pCategoryId, categoryId
@@ -140,8 +126,38 @@ export default function ProductAddupdate() {
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+
   };
+
+
+
+  // 获取product对象
+  const product = useMemo(() => {
+    const { product } = location.state || {}
+    return product
+  }, [location])
+
+
+  const categoryIds = useMemo(() => {
+    const categoryIds = [] //用来接收级联分类id的数组
+    if (!!product) {
+      // 如果是一级列表
+      if (product.pCategoryId === '0') {
+        categoryIds.push(product.categoryId)
+        // setCategoryIds(product.categoryId)
+      } else {
+        // // 如果是二级分类
+        categoryIds.push(product.pCategoryId)
+        categoryIds.push(product.categoryId)
+      }
+    }
+    return categoryIds
+  }, [])
+
+  useEffect(() => {
+    getCategorys('0')
+  }, [])
+
   const title = (
     <span>
       <Button
@@ -153,12 +169,10 @@ export default function ProductAddupdate() {
       >
         <ArrowLeftOutlined />
       </Button>
-      <span>添加商品</span>
+      <span>{!!product ? '修改商品' : '添加商品'}</span>
     </span>
   )
-  useEffect(() => {
-    getCategorys('0')
-  }, [])
+
   return (
     <>
       <Card
@@ -172,11 +186,15 @@ export default function ProductAddupdate() {
             span: 14,
           }}
           initialValues={{
-            remember: true,
+            name: product?.name,
+            desc: product?.desc,
+            price: product?.price,
+            categoryIds: categoryIds
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
+
         >
           <Form.Item
             label="商品名称"
@@ -220,7 +238,7 @@ export default function ProductAddupdate() {
             rules={[
               {
                 required: true,
-                message: '必须输入商品分类！！',
+                message: '必须指定商品分类！！',
               },
             ]}
           >
@@ -233,26 +251,8 @@ export default function ProductAddupdate() {
           </Form.Item>
           <Form.Item
             label="商品图片"
-
           >
-            <Upload
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={handlePreview}
-              onChange={handleChange}
-            >
-              {fileList.length >= 8 ? null : uploadButton}
-            </Upload>
-            <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
-              <img
-                alt="example"
-                style={{
-                  width: '100%',
-                }}
-                src={previewImage}
-              />
-            </Modal>
+          < PicturesWall></PicturesWall>
 
           </Form.Item>
           <Form.Item
