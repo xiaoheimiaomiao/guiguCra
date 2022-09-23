@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import {
   Card,
@@ -25,14 +25,16 @@ export default function ProductAddupdate() {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
   const [options, setOptions] = useState([]);
-  console.log('options: ', options);
+  const pictureRef = useRef()
+  // console.log('pictureRef: ', pictureRef.current?.test());
+  // console.log('options: ', options);
 
- 
- 
+
+
   // const [categoryIds, setCategoryIds] = useState('')
   // const isUpdate = !!product
   const location = useLocation()
-  
+
 
   // 根据category数组 生成option数组
   const initOptions = async (categorys) => {
@@ -45,9 +47,9 @@ export default function ProductAddupdate() {
     // 更新option状态
     // 如果是一个二级分类的更新
     const { pCategoryId, categoryId } = product
-    console.log('product: ', product);
+    // console.log('product: ', product);
 
-    if (!!product&& pCategoryId !== '0') {
+    if (!!product && pCategoryId !== '0') {
       // 获取对应的二级列表
       const subCategorys = await getCategorys(pCategoryId)
       // 生成下拉的option
@@ -111,8 +113,12 @@ export default function ProductAddupdate() {
   };
 
   const onFinish = (values) => {
+    // console.log('values: ', values);
 
     // 1收集数据 并封装成product对象
+    
+   
+
     const { name, desc, price, categoryIds } = values
     let pCategoryId, categoryId
     if (categoryIds.length === 1) {
@@ -122,6 +128,9 @@ export default function ProductAddupdate() {
       pCategoryId = categoryIds[0]
       categoryId = categoryIds[1]
     }
+    const imgs = pictureRef.current.getImgs()
+    const product = {name, desc, price, imgs, pCategoryId, categoryId}
+    console.log('product: ', product);
 
   };
 
@@ -129,17 +138,14 @@ export default function ProductAddupdate() {
 
   };
 
-
-
   // 获取product对象
   const product = useMemo(() => {
     const { product } = location.state || {}
     return product
   }, [location])
-
-
   const categoryIds = useMemo(() => {
     const categoryIds = [] //用来接收级联分类id的数组
+    // 如果是添加商品
     if (!!product) {
       // 如果是一级列表
       if (product.pCategoryId === '0') {
@@ -252,7 +258,7 @@ export default function ProductAddupdate() {
           <Form.Item
             label="商品图片"
           >
-          < PicturesWall></PicturesWall>
+            < PicturesWall ref={pictureRef}></PicturesWall>
 
           </Form.Item>
           <Form.Item
