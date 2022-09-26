@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import {
   Card,
@@ -7,18 +7,15 @@ import {
   Input,
   Modal,
   Upload,
-  Cascader
+  Cascader,
+  message
 } from 'antd'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { reqCategorys } from '../../api/index'
-import { useEffect } from 'react';
-import { useMemo } from 'react';
+import { reqCategorys, reqAddOrUpdateProduct } from '../../api/index'
 import PicturesWall from './PicturesWall';
+import RichTextEditor from './RichTextEditor';
 const { TextArea } = Input;
-
-
-
 
 export default function ProductAddupdate() {
   const navigate = useNavigate()
@@ -26,13 +23,8 @@ export default function ProductAddupdate() {
   const [imageUrl, setImageUrl] = useState();
   const [options, setOptions] = useState([]);
   const pictureRef = useRef()
-  // console.log('pictureRef: ', pictureRef.current?.test());
-  // console.log('options: ', options);
+  const textRef = useRef()
 
-
-
-  // const [categoryIds, setCategoryIds] = useState('')
-  // const isUpdate = !!product
   const location = useLocation()
 
 
@@ -46,28 +38,31 @@ export default function ProductAddupdate() {
     }))
     // 更新option状态
     // 如果是一个二级分类的更新
-    const { pCategoryId, categoryId } = product
-    // console.log('product: ', product);
-
-    if (!!product && pCategoryId !== '0') {
-      // 获取对应的二级列表
-      const subCategorys = await getCategorys(pCategoryId)
-      // 生成下拉的option
-      const childOptions = subCategorys.map((item) => ({
-        value: item._id,
-        label: item.name,
-        isLeaf: true,
-      }))
-      // 找到当前商品的对应的一级option对象
-      const targetOption = options.find(option => option.value === pCategoryId)
-      // 关联对应的一级option上
-      targetOption.children = childOptions
+    if (!!product) {
+      const { pCategoryId } = product
+      if (pCategoryId !== '0') {
+        // 获取对应的二级列表
+        const subCategorys = await getCategorys(pCategoryId)
+        // 生成下拉的option
+        const childOptions = subCategorys.map((item) => ({
+          value: item._id,
+          label: item.name,
+          isLeaf: true,
+        }))
+        // 找到当前商品的对应的一级option对象
+        const targetOption = options.find(option => option.value === pCategoryId)
+        // 关联对应的一级option上
+        targetOption.children = childOptions
+      }
     }
+    // console.log('product: ', product);
     setOptions(options)
+
   }
 
   // 获取一级、二级分类列表并显示
   const getCategorys = async (parentId) => {
+
     const result = await reqCategorys(parentId)
     if (result.status === 0) {
       const categorys = result.data
@@ -82,6 +77,7 @@ export default function ProductAddupdate() {
       }
 
     }
+
   }
 
   // 用于加载下一级列表的回调函数
@@ -112,13 +108,8 @@ export default function ProductAddupdate() {
 
   };
 
-  const onFinish = (values) => {
-    // console.log('values: ', values);
-
+  const onFinish = async (values) => {
     // 1收集数据 并封装成product对象
-    
-   
-
     const { name, desc, price, categoryIds } = values
     let pCategoryId, categoryId
     if (categoryIds.length === 1) {
@@ -129,20 +120,36 @@ export default function ProductAddupdate() {
       categoryId = categoryIds[1]
     }
     const imgs = pictureRef.current.getImgs()
-    const product = {name, desc, price, imgs, pCategoryId, categoryId}
-    console.log('product: ', product);
+    const detail = textRef.current?.getDetail()
+    const newProduct = { name, desc, price, imgs, detail, pCategoryId, categoryId }
 
+    if (!!product) {
+      newProduct._id = product._id
+    }
+    // 2. 调用接口请求函数去添加/更新
+    const result = await reqAddOrUpdateProduct(newProduct)
+    // console.log('newProduct: ', newProduct);
+    // 3. 根据结果提示
+    if (result.status === 0) {
+      message.success(`${!!product ? '更新' : '添加'}商品成功!`)
+      navigate(-1)
+    } else {
+      message.error(`${!!product ? '更新' : '添加'}商品失败!`)
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
-
+    message.error("请按照要求输入商品信息")
   };
 
   // 获取product对象
   const product = useMemo(() => {
     const { product } = location.state || {}
+    console.log('product: ', product);
     return product
+
   }, [location])
+
   const categoryIds = useMemo(() => {
     const categoryIds = [] //用来接收级联分类id的数组
     // 如果是添加商品
@@ -161,7 +168,9 @@ export default function ProductAddupdate() {
   }, [])
 
   useEffect(() => {
+
     getCategorys('0')
+
   }, [])
 
   const title = (
@@ -183,6 +192,7 @@ export default function ProductAddupdate() {
     <>
       <Card
         title={title}
+      // loading={loading}
       >
         <Form
           labelCol={{
@@ -264,7 +274,7 @@ export default function ProductAddupdate() {
           <Form.Item
             label="商品详情"
           >
-            商品详情
+            <RichTextEditor ref={textRef}></RichTextEditor>
           </Form.Item>
           <Form.Item
             wrapperCol={{
