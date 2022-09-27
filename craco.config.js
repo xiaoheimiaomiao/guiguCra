@@ -1,17 +1,17 @@
 /* craco.config.js */
-const CracoLessPlugin=require("craco-less")
+const CracoLessPlugin = require('craco-less');
 module.exports = {
-   plugins:[
+  plugins: [
     {
-        plugin:CracoLessPlugin,
-        option:{
-            lessLoaderOptions:{
-                lessOptions:{
-                    modifyVars:{},
-                    javascriptEnabled:true,
-                }
-            }
-        }
-    }
-   ]
+      plugin: CracoLessPlugin,
+      option: {
+        lessLoaderOptions: {
+          lessOptions: {
+            modifyVars: {},
+            javascriptEnabled: true,
+          },
+        },
+      },
+    },
+  ],
 };
