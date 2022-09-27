@@ -1,7 +1,5 @@
-import React from 'react'
+import React from 'react';
 
 export default function Role() {
-  return (
-    <div>Role</div>
-  )
+  return <div>Role</div>;
 }

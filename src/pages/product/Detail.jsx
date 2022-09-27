@@ -1,68 +1,71 @@
-import { Button, Card, List } from 'antd'
-import { ArrowLeftOutlined } from '@ant-design/icons'
-import React from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { BASE_IMG_URL } from '../../utils/constants'
-import { reqCategory } from '../../api/index'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { Button, Card, List } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { BASE_IMG_URL } from '../../utils/constants';
+import { reqCategory } from '../../api/index';
+import { useState } from 'react';
+import { useEffect } from 'react';
 export default function Detail() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [primaryName, setPrimaryName] = useState()
-  const [secondLevelName, setSecondLevelName] = useState()
-  const [loading, setLoading] = useState(false)
-  const { product } = location.state
-  console.log(product)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [primaryName, setPrimaryName] = useState();
+  const [secondLevelName, setSecondLevelName] = useState();
+  const [loading, setLoading] = useState(false);
+  const { product } = location.state;
+  console.log(product);
   const getName = async () => {
-    const pCategoryId = product.pCategoryId
-    const categoryId = product.categoryId
-    console.log(pCategoryId)
+    const pCategoryId = product.pCategoryId;
+    const categoryId = product.categoryId;
+    console.log(pCategoryId);
     if (pCategoryId === '0') {
-      setLoading(true)
-      const result = await reqCategory(categoryId)
-      console.log(result)
-      setPrimaryName(result.data.name)
-      setLoading(false)
+      setLoading(true);
+      const result = await reqCategory(categoryId);
+      console.log(result);
+      setPrimaryName(result.data.name);
+      setLoading(false);
     } else {
-      setLoading(true)
-      const results = await Promise.all([reqCategory(pCategoryId), reqCategory(categoryId)])
+      setLoading(true);
+      const results = await Promise.all([
+        reqCategory(pCategoryId),
+        reqCategory(categoryId),
+      ]);
       // const result1 = await reqCategory(pCategoryId)
       // const result2 = await reqCategory(categoryId)
 
-      setPrimaryName(results[0].data.name)
-      setSecondLevelName(results[1].data.name)
-      setLoading(false)
+      setPrimaryName(results[0].data.name);
+      setSecondLevelName(results[1].data.name);
+      setLoading(false);
     }
-  }
+  };
   useEffect(() => {
-    getName()
-
-  }, [])
+    getName();
+  }, []);
   const title = (
     <span>
       <Button
-        type='link'
+        type="link"
         style={{ marginRight: 10, fontSize: 20 }}
-        onClick={() => { navigate(-1) }}
+        onClick={() => {
+          navigate(-1);
+        }}
       >
         <ArrowLeftOutlined />
       </Button>
 
       <span>商品详情</span>
     </span>
-  )
+  );
   return (
     <div>
       <Card
         title={title}
-        className='product-detail'
+        className="product-detail"
         bordered={false}
         loading={loading}
       >
         <List
-          // bordered
-          
+        // bordered
         >
           <List.Item>
             <span className="left">商品名称:</span>
@@ -78,7 +81,9 @@ export default function Detail() {
           </List.Item>
           <List.Item>
             <span className="left">所属分类:</span>
-            <span>{primaryName} {secondLevelName ? ' --> ' + secondLevelName : ''}</span>
+            <span>
+              {primaryName} {secondLevelName ? ` --> ${secondLevelName}` : ''}
+            </span>
             {/* <span>电脑--笔记本</span> */}
           </List.Item>
           <List.Item>
@@ -97,28 +102,21 @@ export default function Detail() {
             </span> */}
             <span>
               <img
-
                 src="https://img1.360buyimg.com/n6/jfs/t1/197505/24/13599/83205/616dc631E854d2563/e98b96e5044af9da.jpg"
-                alt="img" />
+                alt="img"
+              />
               <img
-
                 src="https://img1.360buyimg.com/n6/jfs/t1/197505/24/13599/83205/616dc631E854d2563/e98b96e5044af9da.jpg"
-                alt="" />
+                alt=""
+              />
             </span>
           </List.Item>
           <List.Item>
             <span className="left">商品详情:</span>
-            <span dangerouslySetInnerHTML={{ __html: product.detail }}>
-            </span>
-
-
-
-
-
+            <span dangerouslySetInnerHTML={{ __html: product.detail }}></span>
           </List.Item>
-
         </List>
       </Card>
-    </div >
-  )
+    </div>
+  );
 }
