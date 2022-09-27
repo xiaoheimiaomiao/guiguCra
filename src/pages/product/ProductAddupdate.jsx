@@ -268,7 +268,7 @@ export default function ProductAddupdate() {
           <Form.Item
             label="商品图片"
           >
-            < PicturesWall ref={pictureRef}></PicturesWall>
+            < PicturesWall ref={pictureRef} imgs={product.imgs}></PicturesWall>
 
           </Form.Item>
           <Form.Item
