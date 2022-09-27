@@ -13,7 +13,7 @@ export default function Detail() {
   const [secondLevelName, setSecondLevelName] = useState();
   const [loading, setLoading] = useState(false);
   const { product } = location.state;
-  console.log(product);
+  // console.log(product)
   const getName = async () => {
     const pCategoryId = product.pCategoryId;
     const categoryId = product.categoryId;
@@ -88,27 +88,15 @@ export default function Detail() {
           </List.Item>
           <List.Item>
             <span className="left">商品图片:</span>
-            {/* <span>
-              {
-                product.imgs.map(img => (
-                  <img
-                    key={img}
-                    src={BASE_IMG_URL + img}
-                    className="product-img"
-                    alt="img"
-                  />
-                ))
-              }
-            </span> */}
             <span>
-              <img
-                src="https://img1.360buyimg.com/n6/jfs/t1/197505/24/13599/83205/616dc631E854d2563/e98b96e5044af9da.jpg"
-                alt="img"
-              />
-              <img
-                src="https://img1.360buyimg.com/n6/jfs/t1/197505/24/13599/83205/616dc631E854d2563/e98b96e5044af9da.jpg"
-                alt=""
-              />
+              {product.imgs.map((img) => (
+                <img
+                  key={img}
+                  src={BASE_IMG_URL + img}
+                  // className="product-img"
+                  alt="img"
+                />
+              ))}
             </span>
           </List.Item>
           <List.Item>
