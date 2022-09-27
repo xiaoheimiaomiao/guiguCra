@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Table, Space, Modal } from 'antd';
-import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import { Button, Card, Modal, Space, Table } from 'antd';
+import { ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
 import {
+  reqAddCategory,
   reqCategorys,
   reqUpdateCategory,
-  reqAddCategory,
 } from '../../api/index';
 import Addform from './Addform';
 import './Category.less';

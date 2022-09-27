@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Input, Select, Space, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Input, Select, Space, Table, message } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   reqProducts,
@@ -146,35 +146,38 @@ export default function ProductHome() {
   ];
 
   // 获取指定页码数据显示
-  const getProducts = async (pageNum) => {
-    setPagesNum(pageNum);
-    setLoading(true);
-    let result;
-    if (searchName) {
-      result = await reqSearchProducts({
-        pageNum,
-        pageSize: PAGE_SIZE,
-        searchName,
-        searchType,
-      });
-    } else {
-      // 一般分页请求
-      result = await reqProducts(pageNum, PAGE_SIZE);
-    }
-    // const result = await reqProducts(pageNum, PAGE_SIZE)
-    setLoading(false);
-    // console.log(result)
-    if (result.status === 0) {
-      // console.log(result.date)
-      const { total, list } = result.data;
-      setProducts(list);
-      setTotal(total);
-    }
-  };
+  const getProducts = useCallback(
+    async (pageNum) => {
+      setPagesNum(pageNum);
+      setLoading(true);
+      let result;
+      if (searchName) {
+        result = await reqSearchProducts({
+          pageNum,
+          pageSize: PAGE_SIZE,
+          searchName,
+          searchType,
+        });
+      } else {
+        // 一般分页请求
+        result = await reqProducts(pageNum, PAGE_SIZE);
+      }
+      // const result = await reqProducts(pageNum, PAGE_SIZE)
+      setLoading(false);
+      // console.log(result)
+      if (result.status === 0) {
+        // console.log(result.date)
+        const { total, list } = result.data;
+        setProducts(list);
+        setTotal(total);
+      }
+    },
+    [searchName, searchType],
+  );
 
   useEffect(() => {
     getProducts(1);
-  }, []);
+  }, [getProducts]);
   return (
     <>
       <Card title={title} extra={extra}>
