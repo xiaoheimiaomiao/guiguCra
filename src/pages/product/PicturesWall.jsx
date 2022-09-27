@@ -2,7 +2,9 @@
 import React, { useState, useImperativeHandle } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
 import { message, Modal, Upload } from 'antd';
-import {reqDeleteImg } from '../../api/index'
+import { reqDeleteImg } from '../../api/index'
+import { BASE_IMG_URL } from "../../utils/constants";
+import { useEffect } from 'react';
 const getBase64 = (file) =>
     new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -22,6 +24,7 @@ function PicturesWall(props, ref) {
     const [previewTitle, setPreviewTitle] = useState('')
     // 
     const [fileList, setFileList] = useState([])
+    // console.log('fileList: ', fileList);
     // 隐藏modal
     const handleCancel = () => setPreviewOpen(false)
 
@@ -36,7 +39,7 @@ function PicturesWall(props, ref) {
         setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
     };
 
-    const handleChange =async ({ file, fileList: newFileList }) => {
+    const handleChange = async ({ file, fileList: newFileList }) => {
         // 一旦上传成功 将当前的file的信息修正（name，url）
         if (file.status === 'done') {
             const result = file.response
@@ -52,12 +55,12 @@ function PicturesWall(props, ref) {
 
         } else if (file.status === 'removed') {
             // 删除操作
-          const result=await  reqDeleteImg(file.name) 
-          if (result.status === 0) {
+            const result = await reqDeleteImg(file.name)
+            if (result.status === 0) {
                 message.success('删除图片成功！')
-          }else{
+            } else {
                 message.error('删除图片失败！')
-          }
+            }
         }
         setFileList(newFileList);
 
@@ -84,6 +87,24 @@ function PicturesWall(props, ref) {
             getImgs
         }
     })
+    // console.log(props.imgs)
+    const constructor = () => {
+
+        const { imgs } = props
+        if (imgs && imgs.length > 0) {
+            const fileList = imgs.map((img, index) => ({
+                uid: -index, // 每个file都有自己唯一的id
+                name: img, // 图片文件名
+                status: 'done', // 图片状态: done-已上传, uploading: 正在上传中, removed: 已删除
+                url: BASE_IMG_URL + img
+            }))
+            setFileList(fileList)
+            // console.log('fileList: ', fileList);
+        }
+    }
+    useEffect(() => {
+        constructor()
+    }, [])
     return (
         <div>
             <Upload

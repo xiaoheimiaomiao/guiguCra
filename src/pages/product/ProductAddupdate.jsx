@@ -145,7 +145,7 @@ export default function ProductAddupdate() {
   // 获取product对象
   const product = useMemo(() => {
     const { product } = location.state || {}
-    console.log('product: ', product);
+    // console.log('product: ', product);
     return product
 
   }, [location])
@@ -268,7 +268,7 @@ export default function ProductAddupdate() {
           <Form.Item
             label="商品图片"
           >
-            < PicturesWall ref={pictureRef} imgs={product.imgs}></PicturesWall>
+            < PicturesWall ref={pictureRef} imgs={product?.imgs}></PicturesWall>
 
           </Form.Item>
           <Form.Item
