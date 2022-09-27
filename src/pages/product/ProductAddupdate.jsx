@@ -21,6 +21,13 @@ export default function ProductAddupdate() {
 
   const location = useLocation();
 
+  // 获取product对象
+  const product = useMemo(() => {
+    const { product } = location.state || {};
+    // console.log('product: ', product);
+    return product;
+  }, [location]);
+
   const initOptions = useCallback(
     async (categorys) => {
       const options = categorys.map((item) => ({
@@ -73,7 +80,6 @@ export default function ProductAddupdate() {
     },
     [initOptions],
   );
-
   // 根据category数组 生成option数组
 
   // 获取一级、二级分类列表并显示
@@ -145,13 +151,6 @@ export default function ProductAddupdate() {
   const onFinishFailed = (errorInfo) => {
     message.error('请按照要求输入商品信息');
   };
-
-  // 获取product对象
-  const product = useMemo(() => {
-    const { product } = location.state || {};
-    // console.log('product: ', product);
-    return product;
-  }, [location]);
 
   const categoryIds = useMemo(() => {
     const categoryIds = []; //用来接收级联分类id的数组
