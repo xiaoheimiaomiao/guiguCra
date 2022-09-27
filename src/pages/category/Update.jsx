@@ -7,11 +7,11 @@ export default function Update(props) {
   const [form] = Form.useForm();
   useEffect(() => {
     props.setform(form);
-  }, [form]);
+  }, [form, props]);
 
   useEffect(() => {
     form.setFieldValue('updateForm', props.categoryName);
-  }, [props.categoryName]);
+  }, [form, props.categoryName]);
 
   // console.log(Form)
   return (

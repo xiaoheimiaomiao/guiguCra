@@ -1,6 +1,6 @@
 import { Button, Card, List } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BASE_IMG_URL } from '../../utils/constants';
 import { reqCategory } from '../../api/index';
@@ -14,7 +14,7 @@ export default function Detail() {
   const [loading, setLoading] = useState(false);
   const { product } = location.state;
   // console.log(product)
-  const getName = async () => {
+  const getName = useCallback(async () => {
     const pCategoryId = product.pCategoryId;
     const categoryId = product.categoryId;
     console.log(pCategoryId);
@@ -37,10 +37,10 @@ export default function Detail() {
       setSecondLevelName(results[1].data.name);
       setLoading(false);
     }
-  };
+  }, [product.categoryId, product.pCategoryId]);
   useEffect(() => {
     getName();
-  }, []);
+  }, [getName]);
   const title = (
     <span>
       <Button

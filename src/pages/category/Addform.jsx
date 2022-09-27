@@ -1,8 +1,6 @@
 // 添加分类
-import React from 'react';
-import PropTypes from 'prop-types';
 import { Form, Input, Select } from 'antd';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 const { Option } = Select;
 
 function Addform(props) {

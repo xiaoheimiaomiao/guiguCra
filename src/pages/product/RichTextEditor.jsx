@@ -1,8 +1,7 @@
-import React, { useImperativeHandle, useState } from 'react';
 import { EditorState, convertToRaw } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
+import React, { useImperativeHandle, useState } from 'react';
+import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 function RichTextEditor(porps, ref) {
