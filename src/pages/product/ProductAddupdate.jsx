@@ -21,6 +21,30 @@ export default function ProductAddupdate() {
 
   const location = useLocation();
 
+  const getCategory = useCallback(async (parentId) => {
+    const result = await reqCategorys(parentId);
+    if (result.status === 0) {
+      const categorys = result.data;
+
+      if (parentId === '0') {
+        initOptions(categorys);
+        //
+      } else {
+        // 二级列表
+        // 当前async函数返回的promise对象就会成功 且value为categorys
+        return categorys;
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 获取product对象
+  const product = useMemo(() => {
+    const { product } = location.state || {};
+    // console.log('product: ', product);
+    return product;
+  }, [location]);
+
   const initOptions = useCallback(
     async (categorys) => {
       const options = categorys.map((item) => ({
@@ -53,25 +77,6 @@ export default function ProductAddupdate() {
       setOptions(options);
     },
     [getCategory, product],
-  );
-
-  const getCategory = useCallback(
-    async (parentId) => {
-      const result = await reqCategorys(parentId);
-      if (result.status === 0) {
-        const categorys = result.data;
-
-        if (parentId === '0') {
-          initOptions(categorys);
-          //
-        } else {
-          // 二级列表
-          // 当前async函数返回的promise对象就会成功 且value为categorys
-          return categorys;
-        }
-      }
-    },
-    [initOptions],
   );
 
   // 根据category数组 生成option数组
@@ -145,13 +150,6 @@ export default function ProductAddupdate() {
   const onFinishFailed = (errorInfo) => {
     message.error('请按照要求输入商品信息');
   };
-
-  // 获取product对象
-  const product = useMemo(() => {
-    const { product } = location.state || {};
-    // console.log('product: ', product);
-    return product;
-  }, [location]);
 
   const categoryIds = useMemo(() => {
     const categoryIds = []; //用来接收级联分类id的数组
