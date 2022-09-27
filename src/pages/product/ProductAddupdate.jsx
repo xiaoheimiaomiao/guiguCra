@@ -59,7 +59,9 @@ export default function ProductAddupdate() {
       // console.log('product: ', product);
       setOptions(options);
     },
-    [getCategory, product],
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [product],
   );
 
   const getCategory = useCallback(
@@ -267,7 +269,10 @@ export default function ProductAddupdate() {
             <PicturesWall ref={pictureRef} imgs={product?.imgs}></PicturesWall>
           </Form.Item>
           <Form.Item label="商品详情">
-            <RichTextEditor ref={textRef}></RichTextEditor>
+            <RichTextEditor
+              ref={textRef}
+              detail={product?.detail}
+            ></RichTextEditor>
           </Form.Item>
           <Form.Item
             wrapperCol={{
