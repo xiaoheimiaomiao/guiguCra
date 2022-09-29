@@ -33,13 +33,35 @@ function RichTextEditor(porps, ref) {
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
   };
+
   const getDetail = () => {
     return draftToHtml(convertToRaw(editorState.getCurrentContent()));
   };
+
   useImperativeHandle(ref, () => {
     return { getDetail };
   });
 
+  // const uploadImageCallBack = (file) => {
+  //   console.log('ee');
+  //   return new Promise((resolve, reject) => {
+  //     const xhr = new XMLHttpRequest();
+  //     xhr.open('POST', '/api/manage/img/upload');
+  //     xhr.setRequestHeader('Authorization', 'Client-ID XXXXX');
+  //     const data = new FormData();
+  //     data.append('image', file);
+  //     xhr.send(data);
+  //     xhr.addEventListener('load', () => {
+  //       const response = JSON.parse(xhr.responseText);
+  //       const url = response.data.url; //得到图片的url
+  //       resolve({ data: { link: url } });
+  //     });
+  //     xhr.addEventListener('error', () => {
+  //       const error = JSON.parse(xhr.responseText);
+  //       reject(error);
+  //     });
+  //   });
+  // };
   useEffect(() => {
     constructor();
   }, [constructor]);
@@ -50,6 +72,17 @@ function RichTextEditor(porps, ref) {
         wrapperClassName="demo-wrapper"
         editorClassName="demo-editor"
         onEditorStateChange={onEditorStateChange}
+        //   toolbar={{
+        //     // inline: { inDropdown: true },
+        //     // list: { inDropdown: true },
+        //     // textAlign: { inDropdown: true },
+        //     // link: { inDropdown: true },
+        //     // history: { inDropdown: true },
+        //     image: {
+        //       uploadCallback: uploadImageCallBack,
+        //       alt: { present: true, mandatory: true },
+        //     },
+        //   }}
       />
       {/* <textarea
                 disabled

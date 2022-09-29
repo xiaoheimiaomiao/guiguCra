@@ -54,8 +54,10 @@ function PicturesWall(props, ref) {
         message.error('上传失败');
       }
     } else if (file.status === 'removed') {
+      console.log('file.status: ', file.status);
       // 删除操作
       const result = await reqDeleteImg(file.name);
+      console.log('result: ', result);
       if (result.status === 0) {
         message.success('删除图片成功！');
       } else {
